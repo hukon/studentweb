@@ -11,6 +11,7 @@ import {
 import { querySingle, query } from '@/lib/db';
 import styles from './dashboard.module.css';
 import DashboardCharts from './DashboardCharts';
+import AverageCharts from './AverageCharts';
 
 export const metadata = {
   title: 'Tableau de bord | EduSaaS',
@@ -45,6 +46,29 @@ export default async function DashboardPage() {
     name: row.name,
     students: Number(row.count)
   }));
+
+  // Fetch all students to parse averages
+  const allStudents = await query<{bio: string}>('SELECT bio FROM students WHERE bio IS NOT NULL');
+  let high = 0; // >= 14
+  let mid = 0; // 10 - 13.99
+  let low = 0; // < 10
+
+  allStudents.forEach(st => {
+    // text usually like: "Moyenne: 15.43/20", "Redoublant - Moyenne précédente: 9.54/20"
+    const match = st.bio.match(/(\d{1,2}\.\d{1,2})/);
+    if (match && match[1]) {
+      const avg = parseFloat(match[1]);
+      if (avg >= 14) high++;
+      else if (avg >= 10) mid++;
+      else low++;
+    }
+  });
+
+  const averageChartData = [
+    { name: 'Excellents (14+)', value: high, color: 'var(--success, #10b981)' },
+    { name: 'Moyens (10-13.99)', value: mid, color: 'var(--warning, #f59e0b)' },
+    { name: 'En difficulté (<10)', value: low, color: 'var(--danger, #ef4444)' }
+  ].filter(d => d.value > 0);
 
   const cards = [
     { title: 'Classes & Étudiants', icon: Users, href: '/classes', desc: 'Gérer les profils et listes.', color: 'var(--accent-primary)', bg: 'var(--accent-light)' },
@@ -99,9 +123,14 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {chartData.length > 0 && (
-        <DashboardCharts data={chartData} />
-      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        {chartData.length > 0 && (
+          <DashboardCharts data={chartData} />
+        )}
+        {averageChartData.length > 0 && (
+          <AverageCharts data={averageChartData} />
+        )}
+      </div>
     </div>
   );
 }

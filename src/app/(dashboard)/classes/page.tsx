@@ -11,6 +11,7 @@ export default function ClassesPage() {
   const [newClassName, setNewClassName] = useState('');
   const [newStudentName, setNewStudentName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [editingStudent, setEditingStudent] = useState<any | null>(null);
 
   useEffect(() => {
     fetchClasses();
@@ -68,6 +69,27 @@ export default function ClassesPage() {
     if (!confirm('Voulez-vous vraiment supprimer cet étudiant ?')) return;
     await fetch(`/api/students/${studentId}`, { method: 'DELETE' });
     fetchStudents(selectedClass);
+  };
+
+  const updateStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStudent) return;
+    
+    await fetch(`/api/students/${editingStudent.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingStudent)
+    });
+    
+    setEditingStudent(null);
+    fetchStudents(selectedClass);
+  };
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr || dateStr === '0000-00-00' || dateStr.includes('1970')) return '-';
+    // Clean string formats from DB if needed
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('fr-FR');
   };
 
   if (isLoading) return <div className={styles.loader}>Chargement...</div>;
@@ -137,6 +159,8 @@ export default function ClassesPage() {
                   <thead>
                     <tr>
                       <th>Nom complet</th>
+                      <th>Date de naissance</th>
+                      <th>Moyenne / Info</th>
                       <th style={{ width: '100px' }}>Actions</th>
                     </tr>
                   </thead>
@@ -165,9 +189,11 @@ export default function ClassesPage() {
                               </div>
                             </div>
                           </td>
+                          <td>{formatDate(s.dob)}</td>
+                          <td>{s.bio || '-'}</td>
                           <td>
                             <div className={styles.actions}>
-                              <button className={styles.iconBtnEdit} title="Modifier">
+                              <button className={styles.iconBtnEdit} title="Modifier" onClick={() => setEditingStudent(s)}>
                                 <Edit2 size={16} />
                               </button>
                               <button className={styles.iconBtnDelete} onClick={() => deleteStudent(s.id.toString())} title="Supprimer">
@@ -187,6 +213,77 @@ export default function ClassesPage() {
           )}
         </main>
       </div>
+
+      {editingStudent && (
+        <div className={styles.modalOverlay} onClick={() => setEditingStudent(null)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <h2>Modifier l'étudiant</h2>
+            <form onSubmit={updateStudent}>
+              <div className={styles.formGroup}>
+                <label>Nom complet</label>
+                <input 
+                  type="text" 
+                  value={editingStudent.name || ''} 
+                  onChange={e => setEditingStudent({...editingStudent, name: e.target.value})} 
+                  required 
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Date de naissance</label>
+                <input 
+                  type="date" 
+                  value={editingStudent.dob ? new Date(editingStudent.dob).toISOString().split('T')[0] : ''} 
+                  onChange={e => setEditingStudent({...editingStudent, dob: e.target.value})} 
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Moyenne Année Précédente / Info</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Moyenne: 15.43/20"
+                  value={editingStudent.bio || ''} 
+                  onChange={e => setEditingStudent({...editingStudent, bio: e.target.value})} 
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Difficultés d'apprentissage</label>
+                <div className={styles.checkboxGrid}>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.comprehension_orale === true || editingStudent.comprehension_orale === 1} onChange={e => setEditingStudent({...editingStudent, comprehension_orale: e.target.checked})} />
+                    C. Orale
+                  </label>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.ecriture === true || editingStudent.ecriture === 1} onChange={e => setEditingStudent({...editingStudent, ecriture: e.target.checked})} />
+                    Écriture
+                  </label>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.vocabulaire === true || editingStudent.vocabulaire === 1} onChange={e => setEditingStudent({...editingStudent, vocabulaire: e.target.checked})} />
+                    Vocabulaire
+                  </label>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.grammaire === true || editingStudent.grammaire === 1} onChange={e => setEditingStudent({...editingStudent, grammaire: e.target.checked})} />
+                    Grammaire
+                  </label>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.conjugaison === true || editingStudent.conjugaison === 1} onChange={e => setEditingStudent({...editingStudent, conjugaison: e.target.checked})} />
+                    Conjugaison
+                  </label>
+                  <label className={styles.checkboxItem}>
+                    <input type="checkbox" checked={editingStudent.production_ecrite === true || editingStudent.production_ecrite === 1} onChange={e => setEditingStudent({...editingStudent, production_ecrite: e.target.checked})} />
+                    P. Écrite
+                  </label>
+                </div>
+              </div>
+
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.classBtn} style={{width: 'auto', border: '1px solid var(--border-color)'}} onClick={() => setEditingStudent(null)}>Annuler</button>
+                <button type="submit" className={styles.primaryBtn}>Sauvegarder</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
