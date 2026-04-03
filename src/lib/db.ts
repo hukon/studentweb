@@ -1,9 +1,9 @@
-import { Pool as PgPool } from 'pg';
+import { Pool as PgPool } from '@neondatabase/serverless';
 import mysql from 'mysql2/promise';
 
 /**
  * DB wrapper for Next.js to support either PostgreSQL (Neon) or MySQL (InfinityFree legacy).
- * We check process.env.DATABASE_URL. If it contains 'postgres', we use pg.
+ * We check process.env.DATABASE_URL. If it contains 'postgres', we use @neondatabase/serverless.
  * Otherwise, we fallback to mysql2.
  */
 
