@@ -1,0 +1,167 @@
+# .htaccess - Fix image loading issues across browsers
+# Place this file in your website root directory
+
+# Enable CORS for images
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
+</FilesMatch>
+
+# Serve images with correct MIME types
+<IfModule mod_mime.c>
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+    AddType image/webp .webp
+    AddType image/svg+xml .svg
+</IfModule>
+
+# Enable browser caching for images (improves performance)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+</IfModule>
+
+# Prevent direct access to uploads folder (optional - comment out if you want direct access)
+# <Directory "uploads">
+#     Options -Indexes
+# </Directory>
+
+# Student Management System - Security Configuration
+# Save this as: .htaccess (exactly, with the dot at the start)
+
+# ============================================
+# 1. FORCE HTTPS (SSL)
+# ============================================
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove www (optional - keeps URLs clean)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# ============================================
+# 2. SECURITY HEADERS
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Enable XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove server signature
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================
+# 3. PROTECT SENSITIVE FILES
+# ============================================
+# Deny access to .htaccess itself
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Protect PHP config files
+<FilesMatch "^(config|db|database|connection)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect SQL files
+<FilesMatch "\.(sql|sql\.gz)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect log files
+<FilesMatch "\.(log|txt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================
+# 4. PHP SECURITY SETTINGS
+# ============================================
+<IfModule mod_php7.c>
+    # Disable dangerous PHP functions
+    php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source"
+    
+    # Hide PHP version
+    php_flag expose_php Off
+    
+    # Session security
+    php_value session.cookie_httponly 1
+    php_value session.cookie_secure 1
+    php_value session.use_only_cookies 1
+    
+    # File upload limits
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+</IfModule>
+
+# ============================================
+# 5. PREVENT DIRECTORY LISTING
+# ============================================
+Options -Indexes
+
+# ============================================
+# 6. BLOCK BAD BOTS & SCANNERS
+# ============================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} ^.*(bot|crawler|spider|scraper|sqlmap|nikto).*$ [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ============================================
+# 7. PROTECT AGAINST SQL INJECTION IN URLS
+# ============================================
+<IfModule mod_rewrite.c>
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} (UNION|SELECT|INSERT|UPDATE|DELETE|DROP) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ============================================
+# 8. CUSTOM ERROR PAGES (Optional)
+# ============================================
+# ErrorDocument 404 /404.html
+# ErrorDocument 403 /403.html
+# ErrorDocument 500 /500.html
+
+# ============================================
+# 9. COMPRESSION (Speed up your site)
+# ============================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ============================================
+# 10. BROWSER CACHING (Speed up your site)
+# ============================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

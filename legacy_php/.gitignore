@@ -1,0 +1,26 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Debug & logs
+debug.log
+*.log
+
+# Uploads (user content)
+uploads/*
+!uploads/.gitkeep
+
+# Backups & debug (not for production)
+_backups/
+_debug/
+
+# IDE
+.vscode/
+.idea/
+
+# Composer vendor
+vendor/
+composer.lock
+
+# Environment config (if you use .env later)
+.env
