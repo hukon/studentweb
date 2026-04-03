@@ -12,9 +12,11 @@ import {
 import { motion } from 'framer-motion';
 
 export default function AverageCharts({
-  data
+  data,
+  title = "Répartition des Moyennes"
 }: {
-  data: { name: string; value: number; color: string }[]
+  data: { name: string; value: number; color: string }[];
+  title?: string;
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -40,7 +42,7 @@ export default function AverageCharts({
         flexDirection: 'column'
       }}
     >
-      <h3 style={{ marginBottom: '1.5rem', fontSize: '1.125rem', fontWeight: 600 }}>Répartition des Moyennes</h3>
+      <h3 style={{ marginBottom: '1.5rem', fontSize: '1.125rem', fontWeight: 600 }}>{title}</h3>
       <div style={{ height: 300, width: '100%', display: 'flex', justifyContent: 'center' }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

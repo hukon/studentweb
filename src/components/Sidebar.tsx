@@ -10,6 +10,7 @@ import {
   LayoutGrid, 
   Calendar, 
   FileBox, 
+  PieChart,
   X
 } from 'lucide-react';
 import styles from './sidebar.module.css';
@@ -24,6 +25,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
   const navItems = [
     { label: 'Tableau de bord', icon: LayoutDashboard, href: '/' },
+    { label: 'Analytiques', icon: PieChart, href: '/analytics' },
     { label: 'Classes & Étudiants', icon: Users, href: '/classes' },
     { label: 'Évaluations', icon: GraduationCap, href: '/evaluations' },
     { label: 'Plan de Classe', icon: LayoutGrid, href: '/seating' },

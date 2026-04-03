@@ -48,7 +48,6 @@ export default async function DashboardPage() {
 
   const cards = [
     { title: 'Classes & Étudiants', icon: Users, href: '/classes', desc: 'Gérer les profils et listes.', color: 'var(--accent-primary)', bg: 'var(--accent-light)' },
-    { title: 'Analytiques', icon: LayoutGrid, href: '/analytics', desc: 'Moyennes et difficultés.', color: 'var(--success)', bg: 'var(--success-light)' },
     { title: 'Évaluations', icon: GraduationCap, href: '/evaluations', desc: 'Saisir les notes et compétences.', color: 'var(--success)', bg: 'var(--success-light)' },
     { title: 'Plan de Classe', icon: LayoutGrid, href: '/seating', desc: 'Organiser les places.', color: 'var(--warning)', bg: 'var(--warning-light)' },
     { title: 'Calendrier', icon: Calendar, href: '/calendar', desc: 'Événements et jours fériés.', color: '#8b5cf6', bg: '#f5f3ff' },
