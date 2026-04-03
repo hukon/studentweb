@@ -8,8 +8,9 @@ import {
   FileBox, 
   Clock 
 } from 'lucide-react';
-import { querySingle } from '@/lib/db';
+import { querySingle, query } from '@/lib/db';
 import styles from './dashboard.module.css';
+import DashboardCharts from './DashboardCharts';
 
 export const metadata = {
   title: 'Tableau de bord | EduSaaS',
@@ -31,6 +32,19 @@ async function getStats() {
 
 export default async function DashboardPage() {
   const stats = await getStats();
+  
+  // Fetch chart data
+  const chartDataRaw = await query<{name: string; count: number}>(`
+    SELECT c.name, COUNT(s.id) as count
+    FROM classes c
+    LEFT JOIN students s ON c.id = s.class_id
+    GROUP BY c.id, c.name
+  `);
+  
+  const chartData = chartDataRaw.map(row => ({
+    name: row.name,
+    students: Number(row.count)
+  }));
 
   const cards = [
     { title: 'Classes & Étudiants', icon: Users, href: '/classes', desc: 'Gérer les profils et listes.', color: 'var(--accent-primary)', bg: 'var(--accent-light)' },
@@ -84,6 +98,10 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
+
+      {chartData.length > 0 && (
+        <DashboardCharts data={chartData} />
+      )}
     </div>
   );
 }
