@@ -263,3 +263,20 @@
     height: auto;
   }
 }
+
+.tagsContainer {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-left: 0.5rem;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  background-color: var(--danger-light);
+  color: var(--danger);
+  font-weight: 500;
+  border: 1px solid var(--danger);
+}

@@ -151,7 +151,18 @@ export default function ClassesPage() {
                           <td>
                             <div className={styles.studentNameWrapper}>
                               <div className={styles.avatar}>{s.name.charAt(0).toUpperCase()}</div>
-                              <span className={styles.studentName}>{s.name}</span>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span className={styles.studentName}>{s.name}</span>
+                                <div className={styles.tagsContainer}>
+                                  {s.comprehension_orale === true && <span className={styles.tag}>C. Orale</span>}
+                                  {s.ecriture === true && <span className={styles.tag}>Écriture</span>}
+                                  {s.vocabulaire === true && <span className={styles.tag}>Vocabulaire</span>}
+                                  {s.grammaire === true && <span className={styles.tag}>Grammaire</span>}
+                                  {s.conjugaison === true && <span className={styles.tag}>Conjugaison</span>}
+                                  {s.production_ecrite === true && <span className={styles.tag}>P. Écrite</span>}
+                                  {s.category1 && <span className={styles.tag} style={{backgroundColor: 'var(--warning-light)', color: 'var(--warning)', borderColor: 'var(--warning)'}}>{s.category1}</span>}
+                                </div>
+                              </div>
                             </div>
                           </td>
                           <td>
