@@ -102,10 +102,25 @@ export default function ReportsPage() {
       </header>
 
       {/* Printable Area */}
-      <div className={styles.printArea} id="report-print-area" style={{ background: 'white', padding: '20px', color: 'black' }}>
+      <div className={styles.printArea} id="report-print-area" style={{ background: 'white', padding: '15px 20px', color: 'black' }}>
+        <div className={styles.formalHeader}>
+          <p className={styles.republicText}>République Algérienne Démocratique et Populaire</p>
+          <p className={styles.ministryText}>Ministère de l'Éducation Nationale</p>
+          <div className={styles.headerSplit}>
+            <div>
+              <p>Établissement: C.E.M.</p>
+              <p>Année Scolaire: 2025/2026</p>
+            </div>
+            <div>
+              <p>Professeur: _________________</p>
+              <p>Matière: _________________</p>
+            </div>
+          </div>
+        </div>
+
         <div className={styles.printHeader}>
-          <h2>{reportType === 'list' ? 'Liste d\'Appel' : 'Bilan d\'Évaluations'}</h2>
-          <p>Classe : {currentClassName}</p>
+          <h2>{reportType === 'list' ? 'Liste d\'Appel' : 'Bilan d\'Évaluations Pédagogiques'}</h2>
+          <p>Niveau / Classe : <strong>{currentClassName}</strong></p>
         </div>
 
         {isLoading ? (

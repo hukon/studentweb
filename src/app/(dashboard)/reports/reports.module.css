@@ -106,8 +106,9 @@
 
 .table th, .table td {
   border: 1px solid var(--border-color);
-  padding: 0.75rem 1rem;
+  padding: 4px 6px;
   text-align: left;
+  font-size: 11px;
 }
 
 .table th {
@@ -168,4 +169,34 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+}
+
+.formalHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #000;
+  padding-bottom: 10px;
+}
+
+.formalHeader p {
+  margin: 0;
+}
+
+.republicText {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.ministryText {
+  font-size: 12px;
+  margin-bottom: 10px !important;
+}
+
+.headerSplit {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  font-size: 11px;
+  font-weight: bold;
+  margin-top: 10px;
 }
