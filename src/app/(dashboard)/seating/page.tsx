@@ -25,8 +25,8 @@ export default function SeatingPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
-  const ROWS = 6;
-  const COLS = 6;
+  const ROWS = 7;
+  const COLS = 8;
 
   useEffect(() => {
     fetchClasses();
