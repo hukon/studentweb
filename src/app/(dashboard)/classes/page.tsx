@@ -10,6 +10,7 @@ export default function ClassesPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [newClassName, setNewClassName] = useState('');
   const [newStudentName, setNewStudentName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
 
@@ -20,10 +21,15 @@ export default function ClassesPage() {
   useEffect(() => {
     if (selectedClass) {
       fetchStudents(selectedClass);
+      setSearchQuery('');
     } else {
       setStudents([]);
     }
   }, [selectedClass]);
+
+  const filteredStudents = students.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const fetchClasses = async () => {
     const res = await fetch('/api/classes');
@@ -155,6 +161,15 @@ export default function ClassesPage() {
               </div>
 
               <div className={styles.tableWrapper}>
+                <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-input)' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Filtrer les étudiants..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                  />
+                </div>
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -165,12 +180,12 @@ export default function ClassesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.length === 0 ? (
+                    {filteredStudents.length === 0 ? (
                       <tr>
-                        <td colSpan={2} className={styles.emptyState}>Aucun étudiant dans cette classe.</td>
+                        <td colSpan={4} className={styles.emptyState}>Aucun étudiant trouvé.</td>
                       </tr>
                     ) : (
-                      students.map(s => (
+                      filteredStudents.map(s => (
                         <tr key={s.id}>
                           <td>
                             <div className={styles.studentNameWrapper}>

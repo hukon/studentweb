@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileBox, Printer } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import styles from './reports.module.css';
 
 export default function ReportsPage() {
@@ -39,8 +41,23 @@ export default function ReportsPage() {
     setIsLoading(false);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    const element = document.getElementById('report-print-area');
+    if (!element) return;
+    
+    try {
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margin each side
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+      pdf.save(`Rapport_${reportType}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de la génération du PDF');
+    }
   };
 
   const currentClassName = classes.find(c => c.id.toString() === selectedClass)?.name || '';
@@ -82,7 +99,7 @@ export default function ReportsPage() {
       </header>
 
       {/* Printable Area */}
-      <div className={styles.printArea}>
+      <div className={styles.printArea} id="report-print-area" style={{ background: 'white', padding: '20px', color: 'black' }}>
         <div className={styles.printHeader}>
           <h2>{reportType === 'list' ? 'Liste d\'Appel' : 'Bilan d\'Évaluations'}</h2>
           <p>Classe : {currentClassName}</p>
