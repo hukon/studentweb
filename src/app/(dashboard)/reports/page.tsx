@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileBox, Printer } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import styles from './reports.module.css';
 
 export default function ReportsPage() {
@@ -46,14 +44,19 @@ export default function ReportsPage() {
     if (!element) return;
     
     try {
-      const canvas = await html2canvas(element, { scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margin each side
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-      pdf.save(`Rapport_${reportType}.pdf`);
+      if (typeof window !== 'undefined') {
+        const html2pdf = (await import('html2pdf.js')).default;
+        
+        const opt = {
+          margin: 10,
+          filename: `Rapport_${reportType}_${currentClassName}.pdf`,
+          image: { type: 'jpeg' as const, quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+      }
     } catch (err) {
       console.error(err);
       alert('Erreur lors de la génération du PDF');
@@ -114,12 +117,14 @@ export default function ReportsPage() {
             <thead>
               {reportType === 'list' ? (
                 <tr>
+                  <th style={{ width: '40px' }}>N°</th>
                   <th>Nom de l'étudiant</th>
                   <th>Présence</th>
                   <th>Signature / Notes</th>
                 </tr>
               ) : (
                 <tr>
+                  <th style={{ width: '40px' }}>N°</th>
                   <th>Nom de l'étudiant</th>
                   <th>Oral</th>
                   <th>Lecture</th>
@@ -134,12 +139,14 @@ export default function ReportsPage() {
                 <tr key={item.id || idx}>
                   {reportType === 'list' ? (
                     <>
+                      <td>{idx + 1}</td>
                       <td>{item.name}</td>
                       <td></td>
                       <td></td>
                     </>
                   ) : (
                     <>
+                      <td>{idx + 1}</td>
                       <td>{item.student_name}</td>
                       <td>{item.oral_1 || '-'}</td>
                       <td>{item.reading_1 || '-'}</td>

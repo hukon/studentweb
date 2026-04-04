@@ -10,7 +10,7 @@ export default function ClassesPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [newClassName, setNewClassName] = useState('');
   const [newStudentName, setNewStudentName] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
 
@@ -21,15 +21,16 @@ export default function ClassesPage() {
   useEffect(() => {
     if (selectedClass) {
       fetchStudents(selectedClass);
-      setSearchQuery('');
+      setSearchQuery('all');
     } else {
       setStudents([]);
     }
   }, [selectedClass]);
 
-  const filteredStudents = students.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredStudents = students.filter(s => {
+    if (searchQuery === 'all') return true;
+    return s[searchQuery] === true || s[searchQuery] === 1;
+  });
 
   const fetchClasses = async () => {
     const res = await fetch('/api/classes');
@@ -162,17 +163,24 @@ export default function ClassesPage() {
 
               <div className={styles.tableWrapper}>
                 <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-input)' }}>
-                  <input 
-                    type="text" 
-                    placeholder="Filtrer les étudiants..." 
+                  <select 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
-                  />
+                  >
+                    <option value="all">Tous les étudiants</option>
+                    <option value="comprehension_orale">Difficulté: Compréhension Orale</option>
+                    <option value="ecriture">Difficulté: Écriture</option>
+                    <option value="vocabulaire">Difficulté: Vocabulaire</option>
+                    <option value="grammaire">Difficulté: Grammaire</option>
+                    <option value="conjugaison">Difficulté: Conjugaison</option>
+                    <option value="production_ecrite">Difficulté: Production Écrite</option>
+                  </select>
                 </div>
                 <table className={styles.table}>
                   <thead>
                     <tr>
+                      <th style={{ width: '40px' }}>N°</th>
                       <th>Nom complet</th>
                       <th>Date de naissance</th>
                       <th>Moyenne / Info</th>
@@ -182,11 +190,12 @@ export default function ClassesPage() {
                   <tbody>
                     {filteredStudents.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className={styles.emptyState}>Aucun étudiant trouvé.</td>
+                        <td colSpan={5} className={styles.emptyState}>Aucun étudiant trouvé.</td>
                       </tr>
                     ) : (
-                      filteredStudents.map(s => (
+                      filteredStudents.map((s, index) => (
                         <tr key={s.id}>
+                          <td>{index + 1}</td>
                           <td>
                             <div className={styles.studentNameWrapper}>
                               <div className={styles.avatar}>{s.name.charAt(0).toUpperCase()}</div>
