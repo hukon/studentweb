@@ -1,7 +1,7 @@
 # Medical Cabinet UI Overhaul — Design Spec
 
 **Date:** 2026-05-08
-**Scope:** Full visual overhaul (Option B) — XML-only changes plus one Java wiring change for TabLayout
+**Scope:** Full visual overhaul (Option B) — XML changes plus two Java changes: TabLayout wiring in MainActivity, and Spinner → AutoComplete wiring in AddAppointmentActivity
 
 ---
 
@@ -84,4 +84,4 @@ Wired into `themes.xml` via Material3 theme attributes. Night theme left unchang
 
 - Dark mode customization
 - New features (search, filters, patient detail screen)
-- Database or logic changes beyond the TabLayout listener in MainActivity
+- Database or logic changes beyond the TabLayout listener in MainActivity and spinner adapter wiring in AddAppointmentActivity
