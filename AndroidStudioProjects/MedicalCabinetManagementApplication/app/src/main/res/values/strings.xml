@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Medical Cabinet Management Application</string>
+
+    <!-- Titles -->
+    <string name="title_add_patient">Add Patient</string>
+    <string name="title_edit_patient">Edit Patient</string>
+    <string name="title_add_appointment">Add Appointment</string>
+    <string name="title_edit_appointment">Edit Appointment</string>
+    <string name="title_patient_detail">Patient</string>
+
+    <!-- Actions -->
+    <string name="action_save">Save</string>
+    <string name="action_update">Update</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_search">Search</string>
+
+    <!-- Confirm delete -->
+    <string name="confirm_delete_patient_none">Delete %1$s?</string>
+    <string name="confirm_delete_patient_one">Delete %1$s? This will also delete their 1 appointment.</string>
+    <string name="confirm_delete_patient_many">Delete %1$s? This will also delete their %2$d appointments.</string>
+    <string name="confirm_delete_appointment">Delete this appointment?</string>
+
+    <!-- Empty states -->
+    <string name="empty_patients_title">No patients yet</string>
+    <string name="empty_patients_subtitle">Tap + to add your first patient.</string>
+    <string name="empty_appointments_title">No appointments yet</string>
+    <string name="empty_appointments_subtitle">Tap + to schedule one.</string>
+    <string name="empty_patient_appointments">No appointments for this patient yet.</string>
+    <string name="empty_search_format">No matches for "%1$s"</string>
+
+    <!-- Patient detail -->
+    <string name="section_appointments">Appointments</string>
+
+    <!-- Errors / validation -->
+    <string name="error_fill_name_phone">Please fill in name and phone</string>
+    <string name="error_no_patients">Please add a patient first</string>
+    <string name="error_select_date_time">Please select date and time</string>
+</resources>
