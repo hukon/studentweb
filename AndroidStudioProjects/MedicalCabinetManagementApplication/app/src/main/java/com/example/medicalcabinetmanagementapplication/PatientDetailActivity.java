@@ -80,7 +80,13 @@ public class PatientDetailActivity extends AppCompatActivity {
 
         List<Appointment> appointments = dbHelper.getAppointmentsForPatient(patientId);
         if (appointmentAdapter == null) {
-            appointmentAdapter = new AppointmentAdapter(appointments);
+            appointmentAdapter = new AppointmentAdapter(appointments,
+                    appointment -> {
+                        Intent i = new Intent(this, AddAppointmentActivity.class);
+                        i.putExtra(AddAppointmentActivity.EXTRA_EDIT_ID, appointment.getId());
+                        startActivity(i);
+                    },
+                    false);
             recyclerView.setAdapter(appointmentAdapter);
         } else {
             appointmentAdapter.updateData(appointments);
