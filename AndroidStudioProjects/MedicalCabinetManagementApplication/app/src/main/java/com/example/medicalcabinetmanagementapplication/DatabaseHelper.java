@@ -262,4 +262,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         AppointmentSort.sortByDateTimeAsc(appointmentList);
         return appointmentList;
     }
+
+    /** Returns all appointments on the given date string (raw match on the date column). */
+    public List<Appointment> getAppointmentsForDate(String date) {
+        List<Appointment> appointmentList = new ArrayList<>();
+        if (date == null || date.isEmpty()) return appointmentList;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_APPOINTMENTS, null,
+                COLUMN_APP_DATE + "=?", new String[]{date},
+                null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Appointment appointment = new Appointment(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_APP_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_APP_PATIENT_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APP_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APP_TIME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APP_DESCRIPTION))
+                );
+                appointmentList.add(appointment);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return appointmentList;
+    }
 }
