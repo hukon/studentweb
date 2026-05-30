@@ -28,6 +28,7 @@ public class PatientDetailActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private View emptyState;
     private AppointmentAdapter appointmentAdapter;
+    private boolean swipeHelperAttached = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class PatientDetailActivity extends AppCompatActivity {
             i.putExtra(AddAppointmentActivity.EXTRA_PATIENT_ID, patientId);
             startActivity(i);
         });
+
+        attachSwipeToDelete();
     }
 
     @Override
@@ -129,6 +132,71 @@ public class PatientDetailActivity extends AppCompatActivity {
                     dbHelper.deletePatient(patientId);
                     Toast.makeText(this, "Patient deleted", Toast.LENGTH_SHORT).show();
                     finish();
+                })
+                .show();
+    }
+
+    private void attachSwipeToDelete() {
+        if (swipeHelperAttached) return;
+        swipeHelperAttached = true;
+        new androidx.recyclerview.widget.ItemTouchHelper(
+                new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(
+                        0, androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+
+                    private final android.graphics.drawable.ColorDrawable background =
+                            new android.graphics.drawable.ColorDrawable(0xFFE53935);
+                    private final android.graphics.drawable.Drawable icon =
+                            androidx.core.content.ContextCompat.getDrawable(
+                                    PatientDetailActivity.this, R.drawable.ic_delete);
+
+                    @Override
+                    public boolean onMove(@NonNull androidx.recyclerview.widget.RecyclerView rv,
+                                          @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh,
+                                          @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder t) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder, int direction) {
+                        int pos = viewHolder.getAdapterPosition();
+                        Appointment a = appointmentAdapter.getItemAt(pos);
+                        confirmDeleteAppointment(a, pos);
+                    }
+
+                    @Override
+                    public void onChildDraw(@NonNull android.graphics.Canvas c,
+                                            @NonNull androidx.recyclerview.widget.RecyclerView rv,
+                                            @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh,
+                                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        View itemView = vh.itemView;
+                        background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(),
+                                itemView.getRight(), itemView.getBottom());
+                        background.draw(c);
+                        if (icon != null) {
+                            int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                            int iconBottom = iconTop + icon.getIntrinsicHeight();
+                            int iconRight = itemView.getRight() - 32;
+                            int iconLeft = iconRight - icon.getIntrinsicWidth();
+                            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                            icon.draw(c);
+                        }
+                        super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive);
+                    }
+                }).attachToRecyclerView(recyclerView);
+    }
+
+    private void confirmDeleteAppointment(Appointment appointment, int position) {
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.action_delete)
+                .setMessage(R.string.confirm_delete_appointment)
+                .setNegativeButton(R.string.action_cancel, (d, w) -> appointmentAdapter.notifyItemChanged(position))
+                .setOnCancelListener(d -> appointmentAdapter.notifyItemChanged(position))
+                .setPositiveButton(R.string.action_delete, (d, w) -> {
+                    dbHelper.deleteAppointment(appointment.getId());
+                    List<Appointment> remaining = dbHelper.getAppointmentsForPatient(patientId);
+                    appointmentAdapter.updateData(remaining);
+                    emptyState.setVisibility(remaining.isEmpty() ? View.VISIBLE : View.GONE);
+                    recyclerView.setVisibility(remaining.isEmpty() ? View.GONE : View.VISIBLE);
                 })
                 .show();
     }
