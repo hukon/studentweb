@@ -1,24 +1,30 @@
 package com.example.medicalcabinetmanagementapplication;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AddAppointmentActivity extends AppCompatActivity {
 
@@ -71,7 +77,7 @@ public class AddAppointmentActivity extends AppCompatActivity {
             selectedDate = existing.getDate() == null ? "" : existing.getDate();
             selectedTime = existing.getTime() == null ? "" : existing.getTime();
             if (!selectedDate.isEmpty()) buttonDate.setText(selectedDate);
-            if (!selectedTime.isEmpty()) buttonTime.setText(selectedTime);
+            if (!selectedTime.isEmpty()) buttonTime.setText(formatTimeForButton(selectedTime));
             editTextDescription.setText(existing.getDescription());
         } else {
             toolbar.setTitle(R.string.title_add_appointment);
@@ -82,7 +88,7 @@ public class AddAppointmentActivity extends AppCompatActivity {
         }
 
         buttonDate.setOnClickListener(v -> showDatePicker());
-        buttonTime.setOnClickListener(v -> showTimePicker());
+        buttonTime.setOnClickListener(v -> showSlotPicker());
         saveButton.setOnClickListener(v -> saveAppointment());
     }
 
@@ -147,21 +153,86 @@ public class AddAppointmentActivity extends AppCompatActivity {
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
     }
 
-    private void showTimePicker() {
-        Calendar c = Calendar.getInstance();
-        if (!selectedTime.isEmpty()) {
-            String[] parts = selectedTime.split(":");
-            if (parts.length == 2) {
-                try {
-                    c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(parts[0]));
-                    c.set(Calendar.MINUTE, Integer.parseInt(parts[1]));
-                } catch (NumberFormatException ignored) {}
+    /** Time button label: shows the time, suffixing "(off-grid)" when the time doesn't sit on a slot. */
+    private String formatTimeForButton(String time) {
+        if (time == null || time.isEmpty()) return getString(R.string.action_save); // unused, never empty here
+        if (WorkingHours.isOnGrid(time)) return time;
+        return time + " " + getString(R.string.slot_offgrid_suffix);
+    }
+
+    private void showSlotPicker() {
+        // Compute occupied slot indices for the chosen date, excluding the appointment being edited.
+        Set<Integer> occupied = new HashSet<>();
+        if (!selectedDate.isEmpty()) {
+            List<Appointment> sameDay = dbHelper.getAppointmentsForDate(selectedDate);
+            for (Appointment a : sameDay) {
+                if (editId > 0 && a.getId() == editId) continue;
+                int idx = WorkingHours.nearestSlotIndex(a.getTime());
+                if (idx >= 0) occupied.add(idx);
             }
         }
-        new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            selectedTime = String.format("%02d:%02d", hourOfDay, minute);
-            buttonTime.setText(selectedTime);
-        }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
+
+        View content = LayoutInflater.from(this).inflate(R.layout.dialog_slot_picker, null);
+        GridLayout grid = content.findViewById(R.id.slotGrid);
+
+        List<String> slots = WorkingHours.slots();
+        int currentIdx = WorkingHours.nearestSlotIndex(selectedTime);
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.slot_picker_title)
+                .setView(content)
+                .setNegativeButton(R.string.action_cancel, null)
+                .create();
+
+        int spacing = (int) (getResources().getDisplayMetrics().density * 6);
+        for (int i = 0; i < slots.size(); i++) {
+            final int slotIdx = i;
+            final String slotText = slots.get(i);
+            MaterialButton btn = new MaterialButton(this,
+                    null,
+                    com.google.android.material.R.attr.materialButtonOutlinedStyle);
+            btn.setText(slotText);
+            btn.setAllCaps(false);
+            btn.setSingleLine(true);
+            btn.setInsetTop(0);
+            btn.setInsetBottom(0);
+            btn.setMinWidth(0);
+            btn.setMinimumWidth(0);
+            btn.setMinHeight(0);
+            btn.setMinimumHeight(0);
+            int padH = (int) (getResources().getDisplayMetrics().density * 4);
+            int padV = (int) (getResources().getDisplayMetrics().density * 10);
+            btn.setPadding(padH, padV, padH, padV);
+            btn.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+
+            boolean booked = occupied.contains(slotIdx);
+            boolean isCurrent = slotIdx == currentIdx;
+
+            if (booked) {
+                btn.setEnabled(false);
+                btn.setAlpha(0.4f);
+            } else if (isCurrent) {
+                // Show the user's existing slot as filled instead of outlined
+                btn.setBackgroundTintList(getColorStateList(R.color.colorPrimary));
+                btn.setTextColor(0xFFFFFFFF);
+            }
+
+            btn.setOnClickListener(v -> {
+                selectedTime = slotText;
+                buttonTime.setText(slotText);
+                dialog.dismiss();
+            });
+
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+            lp.width = 0;
+            lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            lp.columnSpec = GridLayout.spec(i % 4, 1, 1f);
+            lp.rowSpec = GridLayout.spec(i / 4);
+            lp.setMargins(spacing, spacing, spacing, spacing);
+            grid.addView(btn, lp);
+        }
+
+        dialog.show();
     }
 
     private void saveAppointment() {

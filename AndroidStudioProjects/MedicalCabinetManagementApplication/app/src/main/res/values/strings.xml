@@ -37,4 +37,9 @@
     <string name="error_fill_name_phone">Please fill in name and phone</string>
     <string name="error_no_patients">Please add a patient first</string>
     <string name="error_select_date_time">Please select date and time</string>
+
+    <!-- Slot picker -->
+    <string name="slot_picker_title">Pick a 20-minute slot</string>
+    <string name="slot_picker_subtitle">Working hours: 8:00 – 16:00</string>
+    <string name="slot_offgrid_suffix">(off-grid)</string>
 </resources>
