@@ -8,7 +8,8 @@ export async function GET(request: Request) {
     if (!classId) return NextResponse.json({ error: 'classId is required' }, { status: 400 });
 
     const data = await query(
-      `SELECT e.*, s.name as student_name 
+      `SELECT e.*, s.name as student_name, s.id AS student_pk,
+              (s.photo IS NOT NULL) AS has_photo, s.photo_updated_at 
        FROM students s 
        LEFT JOIN evaluations e ON s.id = e.student_id 
        WHERE s.class_id = ? 

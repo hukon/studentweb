@@ -5,6 +5,7 @@ import { GraduationCap, Save, TrendingUp, AlertCircle } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend 
 } from 'recharts';
+import Avatar from '@/components/Avatar';
 import styles from './evaluations.module.css';
 
 export default function EvaluationsPage() {
@@ -184,7 +185,10 @@ export default function EvaluationsPage() {
               evaluations.map((ev) => (
                 <tr key={ev.student_id || ev.id}>
                   <td className={styles.stickyCol}>
-                    <span className={styles.studentName}>{ev.student_name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Avatar student={{ id: ev.student_pk, name: ev.student_name, has_photo: ev.has_photo, photo_updated_at: ev.photo_updated_at }} size={28} />
+                      <span className={styles.studentName}>{ev.student_name}</span>
+                    </div>
                   </td>
                   {columns.map(col => (
                     <td key={col.key} className={styles.cell}>

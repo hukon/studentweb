@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Users, Plus, Trash2, Edit2, LayoutGrid, List, Camera } from 'lucide-react';
+import Avatar from '@/components/Avatar';
+import PhotoDialog from '@/components/PhotoDialog';
 import styles from './classes.module.css';
 
 export default function ClassesPage() {
@@ -13,6 +15,21 @@ export default function ClassesPage() {
   const [searchQuery, setSearchQuery] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
+  const [photoStudent, setPhotoStudent] = useState<any | null>(null);
+  const [view, setView] = useState<'list' | 'wall'>('list');
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('students-view') === 'wall') setView('wall');
+    } catch {}
+  }, []);
+
+  const changeView = (v: 'list' | 'wall') => {
+    setView(v);
+    try {
+      localStorage.setItem('students-view', v);
+    } catch {}
+  };
 
   useEffect(() => {
     fetchClasses();
@@ -147,6 +164,14 @@ export default function ClassesPage() {
             <>
               <div className={styles.studentHeader}>
                 <h2 className={styles.sectionTitle}>Étudiants</h2>
+                <div className={styles.viewToggle}>
+                  <button className={`${styles.viewBtn} ${view === 'list' ? styles.viewActive : ''}`} onClick={() => changeView('list')} title="Liste" aria-label="Liste">
+                    <List size={18} />
+                  </button>
+                  <button className={`${styles.viewBtn} ${view === 'wall' ? styles.viewActive : ''}`} onClick={() => changeView('wall')} title="Mur de photos" aria-label="Mur de photos">
+                    <LayoutGrid size={18} />
+                  </button>
+                </div>
                 <form onSubmit={addStudent} className={styles.addForm}>
                   <input 
                     type="text" 
@@ -177,6 +202,23 @@ export default function ClassesPage() {
                     <option value="production_ecrite">Difficulté: Production Écrite</option>
                   </select>
                 </div>
+                {view === 'wall' ? (
+                  filteredStudents.length === 0 ? (
+                    <div className={styles.emptyState}>Aucun étudiant trouvé.</div>
+                  ) : (
+                    <div className={styles.wall}>
+                      {filteredStudents.map(s => (
+                        <button key={s.id} className={styles.wallCard} onClick={() => setPhotoStudent(s)} title="Ajouter ou changer la photo">
+                          <Avatar student={s} size={96} />
+                          <span className={styles.wallName}>{s.name}</span>
+                          <span className={styles.wallAction}>
+                            <Camera size={14} /> {s.has_photo ? 'Changer' : 'Ajouter'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )
+                ) : (
                 <table className={styles.table}>
                   <thead>
                     <tr>
@@ -198,7 +240,9 @@ export default function ClassesPage() {
                           <td>{index + 1}</td>
                           <td>
                             <div className={styles.studentNameWrapper}>
-                              <div className={styles.avatar}>{s.name.charAt(0).toUpperCase()}</div>
+                              <button className={styles.avatarBtn} onClick={() => setPhotoStudent(s)} title="Photo" aria-label={`Photo de ${s.name}`}>
+                                <Avatar student={s} size={36} />
+                              </button>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span className={styles.studentName}>{s.name}</span>
                                 <div className={styles.tagsContainer}>
@@ -230,6 +274,7 @@ export default function ClassesPage() {
                     )}
                   </tbody>
                 </table>
+                )}
               </div>
             </>
           ) : (
@@ -237,6 +282,10 @@ export default function ClassesPage() {
           )}
         </main>
       </div>
+
+      {photoStudent && (
+        <PhotoDialog student={photoStudent} onClose={() => setPhotoStudent(null)} onChanged={() => fetchStudents(selectedClass)} />
+      )}
 
       {editingStudent && (
         <div className={styles.modalOverlay} onClick={() => setEditingStudent(null)}>

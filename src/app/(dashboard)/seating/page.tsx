@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutGrid, Save, Sparkles, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Avatar from '@/components/Avatar';
 import styles from './seating.module.css';
 
 interface Student {
   id: number;
   name: string;
+  has_photo?: boolean;
+  photo_updated_at?: string | null;
 }
 
 interface Seat {
@@ -230,7 +233,7 @@ export default function SeatingPage() {
                   draggable
                   onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent, student.id, 'unassigned')}
                 >
-                  <div className={styles.avatar}>{student.name.charAt(0).toUpperCase()}</div>
+                  <Avatar student={student} size={28} />
                   <span className={styles.chipName}>{student.name}</span>
                 </motion.div>
               ))}
@@ -277,7 +280,7 @@ export default function SeatingPage() {
                       draggable
                       onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent, student.id, index)}
                     >
-                      <div className={styles.avatarSeated}>{student.name.charAt(0).toUpperCase()}</div>
+                      <Avatar student={student} size={36} />
                       <span className={styles.seatedName}>{student.name.split(' ')[0]}</span>
                     </motion.div>
                   ) : (
