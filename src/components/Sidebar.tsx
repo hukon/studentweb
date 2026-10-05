@@ -9,6 +9,7 @@ import {
   GraduationCap, 
   LayoutGrid, 
   Calendar, 
+  CalendarClock,
   FileBox, 
   PieChart,
   X
@@ -29,6 +30,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { label: 'Classes & Étudiants', icon: Users, href: '/classes' },
     { label: 'Évaluations', icon: GraduationCap, href: '/evaluations' },
     { label: 'Plan de Classe', icon: LayoutGrid, href: '/seating' },
+    { label: 'Emploi du temps', icon: CalendarClock, href: '/schedule' },
     { label: 'Calendrier Scolaire', icon: Calendar, href: '/calendar' },
     { label: 'Rapports & Export', icon: FileBox, href: '/reports' },
   ];
