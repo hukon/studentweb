@@ -239,9 +239,10 @@ export default function ClassesPage() {
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr || dateStr === '0000-00-00' || dateStr.includes('1970')) return '';
-    const d = new Date(dateStr);
-    return isNaN(d.getTime()) ? '' : d.toLocaleDateString('fr-FR');
+    // dateStr is plain YYYY-MM-DD from the API: reformat as text so no timezone can shift the day
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr || '');
+    if (!m || m[1] === '0000' || m[1] === '1970') return '';
+    return `${m[3]}/${m[2]}/${m[1]}`;
   };
 
   const bulkCount = bulkText.split('\n').filter(n => n.trim()).length;
@@ -551,7 +552,7 @@ export default function ClassesPage() {
                 <input
                   id="edit-dob"
                   type="date"
-                  value={editingStudent.dob ? new Date(editingStudent.dob).toISOString().split('T')[0] : ''}
+                  value={editingStudent.dob ? editingStudent.dob.slice(0, 10) : ''}
                   onChange={e => setEditingStudent({ ...editingStudent, dob: e.target.value })}
                 />
               </div>

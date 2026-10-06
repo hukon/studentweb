@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const classId = searchParams.get('classId');
     if (!classId) return NextResponse.json({ error: 'classId is required' }, { status: 400 });
 
-    const students = await query(`SELECT id, class_id, name, dob, bio, pic_path, comprehension_orale, ecriture, vocabulaire,
+    const students = await query(`SELECT id, class_id, name, CAST(dob AS VARCHAR(10)) AS dob, bio, pic_path, comprehension_orale, ecriture, vocabulaire,
               grammaire, conjugaison, production_ecrite, category1, difficulties, created_at, updated_at,
               (photo IS NOT NULL) AS has_photo, photo_updated_at
        FROM students WHERE class_id = ? ORDER BY name ASC`, [classId]);
