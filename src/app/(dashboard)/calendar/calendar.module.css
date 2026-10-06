@@ -15,7 +15,7 @@
 }
 
 .headerIcon {
-  color: #8b5cf6;
+  color: var(--accent-primary);
 }
 
 .header h1 {
@@ -79,12 +79,12 @@
   outline: none;
 }
 .formGroup input:focus, .formGroup textarea:focus {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--accent-primary) 25%, transparent);
 }
 
 .submitBtn {
-  background: #8b5cf6;
+  background: var(--accent-primary);
   color: white;
   border: none;
   padding: 0.875rem;
@@ -97,7 +97,7 @@
   cursor: pointer;
 }
 .submitBtn:hover {
-  background: #7c3aed;
+  background: var(--accent-hover);
 }
 
 .eventsList {
@@ -118,7 +118,7 @@
 
 .eventCard:hover {
   transform: translateX(4px);
-  border-color: #8b5cf6;
+  border-color: var(--accent-primary);
 }
 
 .eventCard.past {
@@ -132,14 +132,14 @@
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: #f5f3ff;
-  color: #8b5cf6;
+  background: var(--accent-light);
+  color: var(--accent-primary);
   border-radius: var(--radius-md);
   flex-shrink: 0;
 }
 
 [data-theme='dark'] .eventDate {
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in oklch, var(--accent-primary) 12%, transparent);
 }
 
 .day {

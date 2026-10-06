@@ -8,8 +8,8 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Student Organizer | Premium Management',
-  description: 'Manage your students, classes, and seating with ease.',
+  title: 'Suivi des élèves',
+  description: 'Classes, élèves, évaluations, plan de classe et emploi du temps.',
 };
 
 export default function RootLayout({

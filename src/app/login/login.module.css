@@ -95,7 +95,7 @@
   font-size: 2rem;
   color: white;
   margin: 0 auto 1.5rem;
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 8px 16px color-mix(in oklch, var(--accent-primary) 30%, transparent);
   animation: logoFloat 3s ease-in-out infinite;
 }
 

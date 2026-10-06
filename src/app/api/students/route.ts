@@ -19,13 +19,22 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { class_id, name } = await request.json();
-    if (!class_id || !name?.trim()) {
+    const { class_id, name, names } = await request.json();
+    // Accept one name, or a list (bulk add)
+    const list: string[] = (Array.isArray(names) ? names : [name])
+      .map((n: unknown) => (typeof n === 'string' ? n.trim() : ''))
+      .filter(Boolean);
+    if (!class_id || list.length === 0) {
       return NextResponse.json({ error: 'class_id and name are required' }, { status: 400 });
     }
-    
-    await query('INSERT INTO students (class_id, name) VALUES (?, ?)', [class_id, name.trim()]);
-    return NextResponse.json({ success: true });
+    if (list.length > 200) {
+      return NextResponse.json({ error: 'Too many names (max 200)' }, { status: 400 });
+    }
+
+    for (const n of list) {
+      await query('INSERT INTO students (class_id, name) VALUES (?, ?)', [class_id, n]);
+    }
+    return NextResponse.json({ success: true, added: list.length });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create student' }, { status: 500 });
   }

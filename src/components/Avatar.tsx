@@ -10,8 +10,6 @@ export interface PhotoStudent {
   photo_updated_at?: string | null;
 }
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9', '#ec4899', '#14b8a6'];
-
 export function photoUrl(student: PhotoStudent) {
   return `/api/students/${student.id}/photo?v=${encodeURIComponent(student.photo_updated_at || '')}`;
 }
@@ -21,12 +19,6 @@ function initials(name: string) {
   if (parts.length === 0) return '?';
   const letters = parts.length === 1 ? parts[0].slice(0, 1) : parts[0].slice(0, 1) + parts[parts.length - 1].slice(0, 1);
   return letters.toUpperCase();
-}
-
-function colorFor(name: string) {
-  let hash = 0;
-  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
-  return COLORS[Math.abs(hash) % COLORS.length];
 }
 
 interface AvatarProps {
@@ -47,7 +39,7 @@ export default function Avatar({ student, size = 32 }: AvatarProps) {
     );
   }
   return (
-    <div className={styles.avatar} style={{ ...style, background: colorFor(student.name), color: '#fff' }} aria-label={student.name}>
+    <div className={styles.avatar} style={style} aria-label={student.name}>
       {initials(student.name)}
     </div>
   );

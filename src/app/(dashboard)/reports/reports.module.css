@@ -24,7 +24,7 @@
 }
 
 .headerIcon {
-  color: #ec4899;
+  color: var(--accent-text);
 }
 
 .header h1 {

@@ -7,4 +7,6 @@
   font-weight: 600;
   flex-shrink: 0;
   user-select: none;
+  background: var(--accent-light);
+  color: var(--accent-text);
 }
