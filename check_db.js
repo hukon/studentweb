@@ -5,7 +5,7 @@ async function main() {
   const pool = mysql.createPool({
     host: process.env.DB_HOST || 'sql200.infinityfree.com',
     user: process.env.DB_USER || 'if0_41562686',
-    password: process.env.DB_PASSWORD || 'iThwtyAhjmXwcN',
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME || 'if0_41562686_student',
   });
   

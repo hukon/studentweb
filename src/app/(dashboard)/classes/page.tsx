@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Users, Plus, Trash2, Pencil, LayoutGrid, List, Camera, Search, ListPlus, X } from 'lucide-react';
 import Avatar from '@/components/Avatar';
 import PhotoDialog from '@/components/PhotoDialog';
@@ -57,6 +57,11 @@ export default function ClassesPage() {
   const [bulkText, setBulkText] = useState('');
   const [view, setView] = useState<'list' | 'wall'>('wall');
   const [error, setError] = useState('');
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  // Students already fetched per class: switching back to a class shows them instantly
+  const cache = useRef<Map<string, Student[]>>(new Map());
+  const inflight = useRef<Set<string>>(new Set());
+  const currentClass_ = useRef('');
 
   useEffect(() => {
     try {
@@ -91,27 +96,59 @@ export default function ClassesPage() {
   }, []);
 
   const fetchStudents = useCallback(async (classId: string) => {
+    const cached = cache.current.get(classId);
+    if (classId === currentClass_.current) {
+      if (cached) setStudents(cached);
+      else {
+        setStudents([]);
+        setStudentsLoading(true);
+      }
+    }
+    if (inflight.current.has(classId)) return;
+    inflight.current.add(classId);
     try {
       const res = await fetch(`/api/students?classId=${classId}`);
       if (!res.ok) throw new Error();
-      setStudents(await res.json());
+      const data: Student[] = await res.json();
+      cache.current.set(classId, data);
+      if (classId === currentClass_.current) setStudents(data);
     } catch {
       setError('Impossible de charger les élèves.');
+    } finally {
+      inflight.current.delete(classId);
+      if (classId === currentClass_.current) setStudentsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchClasses();
-  }, [fetchClasses]);
+    // Start loading the last-used class's students at the same time as the class list
+    let last = '';
+    try {
+      last = localStorage.getItem('last-class') || '';
+    } catch {}
+    if (last) {
+      currentClass_.current = last;
+      fetchStudents(last);
+    }
+    fetchClasses(last || undefined);
+  }, [fetchClasses, fetchStudents]);
 
   useEffect(() => {
     setSearch('');
     setDifficulty('all');
-    if (selectedClass) fetchStudents(selectedClass);
-    else setStudents([]);
+    currentClass_.current = selectedClass;
+    if (selectedClass) {
+      try {
+        localStorage.setItem('last-class', selectedClass);
+      } catch {}
+      fetchStudents(selectedClass);
+    } else {
+      setStudents([]);
+    }
   }, [selectedClass, fetchStudents]);
 
   const refresh = () => {
+    cache.current.delete(selectedClass);
     fetchStudents(selectedClass);
     fetchClasses(selectedClass);
   };
@@ -341,7 +378,16 @@ export default function ClassesPage() {
               </div>
             )}
 
-            {students.length === 0 ? (
+            {studentsLoading && students.length === 0 ? (
+              <div className={styles.wall} aria-busy="true" aria-label="Chargement des élèves">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className={styles.skeletonCard}>
+                    <span className={styles.skeletonAvatar} />
+                    <span className={styles.skeletonLine} />
+                  </div>
+                ))}
+              </div>
+            ) : students.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>Cette classe est vide</h3>
                 <p>Ajoutez un premier élève ci-dessus, ou collez la liste complète de la classe (un nom par ligne).</p>

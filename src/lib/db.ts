@@ -1,4 +1,4 @@
-import { Pool as PgPool } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 import mysql from 'mysql2/promise';
 
 /**
@@ -7,25 +7,22 @@ import mysql from 'mysql2/promise';
  * Otherwise, we fallback to mysql2.
  */
 
-let pgPool: PgPool | null = null;
+// Neon's HTTP driver: one HTTPS request per query, no WebSocket handshake.
+// Much faster than a pooled connection for the short, single-statement queries this app runs.
+let pgSql: ReturnType<typeof neon> | null = null;
 let mysqlPool: mysql.Pool | null = null;
 
 const dbType = process.env.DATABASE_URL?.startsWith('postgres') ? 'postgres' : 'mysql';
 
 if (dbType === 'postgres') {
-  if (!pgPool) {
-    pgPool = new PgPool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
-    });
-  }
+  pgSql = neon(process.env.DATABASE_URL!);
 } else {
   if (!mysqlPool) {
     mysqlPool = mysql.createPool({
-      host: process.env.DB_HOST || 'sql200.infinityfree.com',
-      user: process.env.DB_USER || 'if0_41562686',
-      password: process.env.DB_PASSWORD || 'iThwtyAhjmXwcN',
-      database: process.env.DB_NAME || 'if0_41562686_student',
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0
@@ -44,8 +41,8 @@ export async function query<T>(text: string, params: any[] = []): Promise<T[]> {
     pgText = pgText.replace(/\?/g, () => `$${i++}`);
     
     // Quick hack for boolean maps if needed for schema matching, but simple selects should work
-    const res = await pgPool!.query(pgText, params);
-    return res.rows as T[];
+    const rows = await pgSql!.query(pgText, params);
+    return rows as T[];
   } else {
     const [rows] = await mysqlPool!.execute(text, params);
     return rows as T[];

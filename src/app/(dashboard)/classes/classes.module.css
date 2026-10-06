@@ -657,3 +657,34 @@
     flex-basis: 100%;
   }
 }
+
+/* Loading placeholders */
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0.5rem 0.75rem;
+}
+
+.skeletonAvatar,
+.skeletonLine {
+  background: var(--bg-input);
+  border-radius: 999px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonAvatar {
+  width: 96px;
+  height: 96px;
+}
+
+.skeletonLine {
+  width: 60%;
+  height: 12px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
