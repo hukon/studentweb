@@ -16,11 +16,11 @@ export default function ClassesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
   const [photoStudent, setPhotoStudent] = useState<any | null>(null);
-  const [view, setView] = useState<'list' | 'wall'>('list');
+  const [view, setView] = useState<'list' | 'wall'>('wall');
 
   useEffect(() => {
     try {
-      if (localStorage.getItem('students-view') === 'wall') setView('wall');
+      if (localStorage.getItem('students-view') === 'list') setView('list');
     } catch {}
   }, []);
 
@@ -166,10 +166,10 @@ export default function ClassesPage() {
                 <h2 className={styles.sectionTitle}>Étudiants</h2>
                 <div className={styles.viewToggle}>
                   <button className={`${styles.viewBtn} ${view === 'list' ? styles.viewActive : ''}`} onClick={() => changeView('list')} title="Liste" aria-label="Liste">
-                    <List size={18} />
+                    <List size={18} /> Liste
                   </button>
                   <button className={`${styles.viewBtn} ${view === 'wall' ? styles.viewActive : ''}`} onClick={() => changeView('wall')} title="Mur de photos" aria-label="Mur de photos">
-                    <LayoutGrid size={18} />
+                    <LayoutGrid size={18} /> Photos
                   </button>
                 </div>
                 <form onSubmit={addStudent} className={styles.addForm}>
@@ -209,7 +209,10 @@ export default function ClassesPage() {
                     <div className={styles.wall}>
                       {filteredStudents.map(s => (
                         <button key={s.id} className={styles.wallCard} onClick={() => setPhotoStudent(s)} title="Ajouter ou changer la photo">
-                          <Avatar student={s} size={96} />
+                          <span className={styles.avatarWrap}>
+                            <Avatar student={s} size={104} />
+                            <span className={styles.cameraBadge}><Camera size={14} /></span>
+                          </span>
                           <span className={styles.wallName}>{s.name}</span>
                           <span className={styles.wallAction}>
                             <Camera size={14} /> {s.has_photo ? 'Changer' : 'Ajouter'}
@@ -241,7 +244,10 @@ export default function ClassesPage() {
                           <td>
                             <div className={styles.studentNameWrapper}>
                               <button className={styles.avatarBtn} onClick={() => setPhotoStudent(s)} title="Photo" aria-label={`Photo de ${s.name}`}>
-                                <Avatar student={s} size={36} />
+                                <span className={styles.avatarWrap}>
+                                  <Avatar student={s} size={40} />
+                                  <span className={styles.cameraBadge}><Camera size={11} /></span>
+                                </span>
                               </button>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span className={styles.studentName}>{s.name}</span>
