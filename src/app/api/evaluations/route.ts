@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
+const GRADE_KEYS = [
+  'oral_1', 'oral_2', 'oral_3', 'reading_1', 'reading_2', 'reading_3',
+  'comp_1', 'comp_2', 'comp_3', 'prod_1', 'prod_2', 'prod_3', 'prod_4', 'global_mastery',
+];
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -8,8 +13,13 @@ export async function GET(request: Request) {
     if (!classId) return NextResponse.json({ error: 'classId is required' }, { status: 400 });
 
     const data = await query(
-      `SELECT e.*, s.name as student_name, s.id AS student_pk,
-              (s.photo IS NOT NULL) AS has_photo, s.photo_updated_at 
+      `SELECT s.id AS student_id, s.name AS student_name,
+              (s.photo IS NOT NULL) AS has_photo, s.photo_updated_at,
+              e.oral_1, e.oral_2, e.oral_3,
+              e.reading_1, e.reading_2, e.reading_3,
+              e.comp_1, e.comp_2, e.comp_3,
+              e.prod_1, e.prod_2, e.prod_3, e.prod_4,
+              e.global_mastery
        FROM students s 
        LEFT JOIN evaluations e ON s.id = e.student_id 
        WHERE s.class_id = ? 
@@ -33,6 +43,12 @@ export async function POST(request: Request) {
     // Upsert logic. Since we just have standard properties, we'll iterate.
     for (const record of evaluations) {
       if (!record.student_id) continue;
+
+      // Only A-D (or empty) are valid grades
+      for (const key of GRADE_KEYS) {
+        const v = typeof record[key] === 'string' ? record[key].trim().toUpperCase() : '';
+        record[key] = /^[A-D]$/.test(v) ? v : null;
+      }
       
       const exists = await query('SELECT id FROM evaluations WHERE student_id = ?', [record.student_id]);
       
