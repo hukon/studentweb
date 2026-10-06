@@ -69,11 +69,8 @@ export default function ReportsPage() {
     <div className={styles.container}>
       <header className={`${styles.header} no-print`}>
         <div className={styles.headerLeft}>
-          <div className={styles.headerTitle}>
-            <FileBox size={28} className={styles.headerIcon} />
-            <h1>Rapports & Export</h1>
-          </div>
-          <p className={styles.subtitle}>Générez des rapports PDF (via l'impression du navigateur).</p>
+          <h1>Rapports et export</h1>
+          <p className={styles.subtitle}>Choisissez un rapport, puis imprimez-le ou enregistrez-le en PDF.</p>
         </div>
 
         <div className={styles.headerActions}>

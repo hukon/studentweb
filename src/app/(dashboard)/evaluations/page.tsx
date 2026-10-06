@@ -113,11 +113,8 @@ export default function EvaluationsPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <div className={styles.headerTitle}>
-            <GraduationCap size={28} className={styles.headerIcon} />
-            <h1>Évaluations & Notes</h1>
-          </div>
-          <p className={styles.subtitle}>Saisie rapide type tableur. Tapez A, B, C, ou D.</p>
+          <h1>Évaluations</h1>
+          <p className={styles.subtitle}>Cliquez une case et tapez A, B, C ou D. Pensez à sauvegarder.</p>
         </div>
 
         <div className={styles.headerActions}>

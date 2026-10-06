@@ -136,3 +136,11 @@ h1, h2, h3 {
     scroll-behavior: auto !important;
   }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 0.9s linear infinite;
+}

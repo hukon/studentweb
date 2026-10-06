@@ -194,11 +194,7 @@ export default function SchedulePage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.headerTitle}>
-          <CalendarClock size={28} className={styles.headerIcon} />
-          <h1>Emploi du temps</h1>
-        </div>
-        <p className={styles.subtitle}>Gérez les horaires des classes et consultez ceux des enseignants.</p>
+        <h1>Emploi du temps</h1>
       </header>
 
       {error && <div className={styles.error}>{error}</div>}

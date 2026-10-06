@@ -14,13 +14,10 @@
   gap: 0.75rem;
 }
 
-.headerIcon {
-  color: var(--accent-primary);
-}
 
 .header h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: 650;
   color: var(--text-primary);
 }
 
@@ -181,4 +178,24 @@
   .grid {
     grid-template-columns: 1fr;
   }
+}
+
+.deleteBtn {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background: var(--danger-light);
+  color: var(--danger);
 }

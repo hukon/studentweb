@@ -78,11 +78,7 @@ export default async function AnalyticsPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header style={{ marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-          <Activity size={28} style={{ color: 'var(--accent-primary)' }} />
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>Analytiques Avancées</h1>
-        </div>
-        <p style={{ color: 'var(--text-secondary)' }}>Analysez les données de performance et de difficultés d'apprentissage.</p>
+        <h1 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 650, color: 'var(--text-primary)' }}>Analytiques</h1>
       </header>
 
       {/* Averages Section */}

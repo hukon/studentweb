@@ -39,21 +39,23 @@ export default function CalendarPage() {
     fetchEvents();
   };
 
+  const deleteEvent = async (id: number, title: string) => {
+    if (!confirm(`Supprimer « ${title} » du calendrier ?`)) return;
+    await fetch(`/api/calendar/${id}`, { method: 'DELETE' });
+    fetchEvents();
+  };
+
   if (isLoading) return <div className="loader">Chargement...</div>;
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.headerTitle}>
-          <Calendar size={28} className={styles.headerIcon} />
-          <h1>Calendrier Scolaire</h1>
-        </div>
-        <p className={styles.subtitle}>Gérez les événements, jours fériés et anniversaires.</p>
+        <h1>Calendrier scolaire</h1>
       </header>
 
       <div className={styles.grid}>
         <div className={styles.addSection}>
-          <h2 className={styles.sectionTitle}>Nouvel Événement</h2>
+          <h2 className={styles.sectionTitle}>Nouvel événement</h2>
           <form className={styles.form} onSubmit={addEvent}>
             <div className={styles.formGroup}>
               <label>Titre de l'événement</label>
@@ -74,7 +76,7 @@ export default function CalendarPage() {
         </div>
 
         <div className={styles.listSection}>
-          <h2 className={styles.sectionTitle}>Événements à venir</h2>
+          <h2 className={styles.sectionTitle}>Événements</h2>
           <div className={styles.eventsList}>
             {events.length === 0 ? (
               <p className={styles.empty}>Aucun événement programmé.</p>
@@ -92,6 +94,9 @@ export default function CalendarPage() {
                       <h3>{ev.title}</h3>
                       {ev.notes && <p>{ev.notes}</p>}
                     </div>
+                    <button className={styles.deleteBtn} onClick={() => deleteEvent(ev.id, ev.title)} aria-label={`Supprimer ${ev.title}`} title="Supprimer">
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 );
               })

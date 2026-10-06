@@ -185,11 +185,8 @@ export default function SeatingPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <div className={styles.headerTitle}>
-            <LayoutGrid size={28} className={styles.headerIcon} />
-            <h1>Plan de Classe</h1>
-          </div>
-          <p className={styles.subtitle}>Organisez les places par simple glisser-déposer.</p>
+          <h1>Plan de classe</h1>
+          <p className={styles.subtitle}>Glissez les élèves vers les places, puis sauvegardez.</p>
         </div>
 
         <div className={styles.headerActions}>

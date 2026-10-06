@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Lock, AlertCircle, Loader2, GraduationCap } from 'lucide-react';
 import styles from './login.module.css';
 
 export default function LoginPage() {
@@ -33,7 +33,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err) {
-      setError('Erreur réseau. Veuillez réessayer.');
+      setError('Connexion impossible. Vérifiez votre réseau et réessayez.');
     } finally {
       setIsLoading(false);
     }
@@ -41,23 +41,17 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.backgroundShapes}>
-        <div className={styles.shape1}></div>
-        <div className={styles.shape2}></div>
-        <div className={styles.shape3}></div>
-      </div>
-
       <div className={styles.loginCard}>
         <div className={styles.header}>
-          <div className={styles.logo}>📚</div>
-          <h1 className={styles.title}>Espace Enseignant</h1>
+          <div className={styles.logo}><GraduationCap size={28} /></div>
+          <h1 className={styles.title}>Suivi des élèves</h1>
           <p className={styles.subtitle}>
-            Bienvenue sur votre plateforme de gestion des étudiants
+            Connectez-vous pour accéder à vos classes.
           </p>
         </div>
 
         {error && (
-          <div className={styles.errorBanner}>
+          <div className={styles.errorBanner} role="alert">
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>

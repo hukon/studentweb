@@ -24,13 +24,10 @@
   gap: 0.75rem;
 }
 
-.headerIcon {
-  color: var(--success);
-}
 
 .header h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: 650;
   color: var(--text-primary);
 }
 

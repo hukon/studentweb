@@ -649,3 +649,11 @@
     white-space: nowrap;
   }
 }
+
+@media (max-width: 600px) {
+  .panelHead .inlineForm,
+  .panelHead .inlineForm .input {
+    width: 100%;
+    flex-basis: 100%;
+  }
+}
